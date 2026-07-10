@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIXEL STATION — 像素游戏站</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #050008;
+      font-family: 'Press Start 2P', monospace;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .star {
+      position: absolute;
+      background: #fff;
+      width: 2px; height: 2px;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      from { transform: translateY(-10px); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      to { transform: translateY(100vh); opacity: 0; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 20px 40px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .header h1 {
+      font-size: 32px;
+      letter-spacing: 3px;
+      text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff66;
+      color: #00ffff;
+      margin-bottom: 8px;
+    }
+    .header h1 .accent {
+      color: #ff00aa;
+      text-shadow: 0 0 20px #ff00aa, 0 0 40px #ff00aa66;
+    }
+    .header p {
+      font-size: 9px;
+      color: #777;
+      letter-spacing: 1px;
+      line-height: 1.8;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 8px;
+      color: #ffd700;
+      border: 1px solid #ffd70044;
+      padding: 4px 10px;
+      margin-top: 12px;
+      border-radius: 2px;
+      background: #ffd70011;
+    }
+
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      font-size: 8px;
+      padding: 6px 14px;
+      border: 1px solid #333;
+      background: transparent;
+      color: #888;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      border-color: #00ffff;
+      color: #00ffff;
+      background: #00ffff11;
+    }
+
+    .games {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: linear-gradient(135deg, #0d0218, #13042a);
+      border: 2px solid #1a1030;
+      border-radius: 4px;
+      padding: 20px 16px;
+      text-decoration: none;
+      color: #fff;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      opacity: 0.8;
+    }
+    .card:nth-child(1)::before { background: #00ffff; box-shadow: 0 0 12px #00ffff; }
+    .card:nth-child(2)::before { background: #ff4444; box-shadow: 0 0 12px #ff4444; }
+    .card:nth-child(3)::before { background: #ff00aa; box-shadow: 0 0 12px #ff00aa; }
+    .card:nth-child(4)::before { background: #44ff44; box-shadow: 0 0 12px #44ff44; }
+    .card:nth-child(5)::before { background: #ffdd00; box-shadow: 0 0 12px #ffdd00; }
+    .card:nth-child(6)::before { background: #aa44ff; box-shadow: 0 0 12px #aa44ff; }
+    .card:nth-child(7)::before { background: #ff8844; box-shadow: 0 0 12px #ff8844; }
+
+    .card:hover {
+      border-color: #333566;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .card .num {
+      font-size: 7px;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    .card h2 {
+      font-size: 12px;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .card:nth-child(1) h2 { color: #00ffff; }
+    .card:nth-child(2) h2 { color: #ff6666; }
+    .card:nth-child(3) h2 { color: #ff44aa; }
+    .card:nth-child(4) h2 { color: #44ff44; }
+    .card:nth-child(5) h2 { color: #ffdd00; }
+    .card:nth-child(6) h2 { color: #aa44ff; }
+    .card:nth-child(7) h2 { color: #ff8844; }
+
+    .card .subtitle {
+      font-size: 7px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .card .desc {
+      font-size: 7px;
+      color: #999;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      min-height: 36px;
+    }
+    .card .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .card .tag {
+      font-size: 6px;
+      padding: 2px 5px;
+      border-radius: 2px;
+      background: #ffffff11;
+      color: #888;
+    }
+    .card .play {
+      font-size: 8px;
+      text-align: center;
+      padding: 6px;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+    .card:nth-child(1) .play { background: #00ffff22; color: #00ffff; }
+    .card:nth-child(2) .play { background: #ff444422; color: #ff6666; }
+    .card:nth-child(3) .play { background: #ff00aa22; color: #ff44aa; }
+    .card:nth-child(4) .play { background: #44ff4422; color: #44ff44; }
+    .card:nth-child(5) .play { background: #ffdd0022; color: #ffdd00; }
+    .card:nth-child(6) .play { background: #aa44ff22; color: #aa44ff; }
+    .card:nth-child(7) .play { background: #ff884422; color: #ff8844; }
+    .card:hover .play { background: #ffffff33; }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding: 20px;
+      border-top: 1px solid #1a1030;
+      margin-bottom: 20px;
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 24px;
+      color: #00ffff;
+    }
+    .stat-label {
+      font-size: 8px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .tech {
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid #1a1030;
+      margin-top: 20px;
+    }
+    .tech h3 {
+      font-size: 10px;
+      color: #ffd700;
+      margin-bottom: 12px;
+    }
+    .tech .stack {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+    .tech .stack span {
+      font-size: 8px;
+      padding: 4px 10px;
+      border: 1px solid #333;
+      border-radius: 2px;
+      color: #aaa;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 8px;
+      color: #444;
+      padding: 20px;
+      border-top: 1px solid #1a1030;
+    }
+    .footer a {
+      color: #00ffff;
+      text-decoration: none;
+    }
+
+    @media (max-width: 500px) {
+      .header h1 { font-size: 20px; }
+      .games { grid-template-columns: 1fr; }
+      .stats { gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <div class="header">
+      <h1>PIXEL <span class="accent">STATION</span></h1>
+      <p>7 Games | Pure HTML5 Canvas | Zero Dependencies</p>
+      <div class="badge">Vibe Coding Collection</div>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">全部</button>
+      <button class="filter-btn" data-filter="classic">经典</button>
+      <button class="filter-btn" data-filter="arcade">街机</button>
+      <button class="filter-btn" data-filter="multiplayer">多人</button>
+    </div>
+
+    <div class="games">
+      <a class="card" href="mechabattle/" data-tags="multiplayer,fighting">
+        <div class="num">01</div>
+        <h2>MECHA BATTLE</h2>
+        <div class="subtitle">PIXEL MECHA FIGHTER</div>
+        <div class="desc">双人同屏格斗争霸。操控像素机甲进行移动、攻击、防御、跳跃。</div>
+        <div class="tags">
+          <span class="tag">2P</span>
+          <span class="tag">Fighting</span>
+        </div>
+        <div class="play">PLAY ▶</div>
+      </a>
+
+      <a class="card" href="dungeon/" data-tags="arcade,roguelike">
+        <div class="num">02</div>
+        <h2>DUNGEON PIXEL</h2>
+        <div class="subtitle">ROGUELIKE DUNGEON</div>
+        <div class="desc">俯视角地牢探险。随机生成地图，击败怪物、收集道具、挑战BOSS。</div>
+        <div class="tags">
+          <span class="tag">Roguelike</span>
+          <span class="tag">Adventure</span>
+        </div>
+        <div class="play">PLAY ▶</div>
+      </a>
+
+      <a class="card" href="spaceshooter/" data-tags="arcade,shooter">
+        <div class="num">03</div>
+        <h2>STAR PIXEL</h2>
+        <div class="subtitle">SPACE BULLET SHOOTER</div>
+        <div class="desc">纵向卷轴弹幕射击。自动射击、炸弹清屏、5级武器升级、BOSS战。</div>
+        <div class="tags">
+          <span class="tag">Shooter</span>
+          <span class="tag">Bullet Hell</span>
+        </div>
+        <div class="play">PLAY ▶</div>
+      </a>
+
+      <a class="card" href="pong/" data-tags="classic,multiplayer">
+        <div class="num">04</div>
+        <h2>PIXEL PONG</h2>
+        <div class="subtitle">CLASSIC ARCADE</div>
+        <div class="desc">经典乒乓对战。单人对战AI或双人同屏竞技，先得10分获胜。</div>
+        <div class="tags">
+          <span class="tag">1P/2P</span>
+          <span class="tag">Arcade</span>
+        </div>
+        <div class="play">PLAY ▶</div>
+      </a>
+
+      <a class="card" href="snake/" data-tags="classic,puzzle">
+        <div class="num">05</div>
+        <h2>SNAKE</h2>
+        <div class="subtitle">CLASSIC SNAKE</div>
+        <div class="desc">经典贪吃蛇。控制方向吃食物，避免撞墙和自身，最高分记录保存。</div>
+        <div class="tags">
+          <span class="tag">Classic</span>
+          <span class="tag">Puzzle</span>
+        </div>
+        <div class="play">PLAY ▶</div>
+      </a>
+
+      <a class="card" href="tetris/" data-tags="classic,puzzle">
+        <div class="num">06</div>
+        <h2>TETRIS</h2>
+        <div class="subtitle">PIXEL TETRIS</div>
+        <div class="desc">俄罗斯方块。7种经典方块、旋转移动、硬降、等级递增难度。</div>
+        <div class="tags">
+          <span class="tag">Classic</span>
+          <span class="tag">Puzzle</span>
+        </div>
+        <div class="play">PLAY ▶</div>
+      </a>
+
+      <a class="card" href="breakout/" data-tags="classic,arcade">
+        <div class="num">07</div>
+        <h2>BREAKOUT</h2>
+        <div class="subtitle">PIXEL BREAKOUT</div>
+        <div class="desc">像素打砖块。5行彩色砖块，控制挡板反弹小球，消灭所有砖块通关。</div>
+        <div class="tags">
+          <span class="tag">Classic</span>
+          <span class="tag">Arcade</span>
+        </div>
+        <div class="play">PLAY ▶</div>
+      </a>
+    </div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-num">7</div>
+        <div class="stat-label">游戏</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0</div>
+        <div class="stat-label">依赖</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">HTML5</div>
+        <div class="stat-label">技术栈</div>
+      </div>
+    </div>
+
+    <div class="tech">
+      <h3>TECH STACK</h3>
+      <div class="stack">
+        <span>HTML5 Canvas</span>
+        <span>Vanilla JS</span>
+        <span>No Framework</span>
+        <span>No Build</span>
+        <span>Press Start 2P</span>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>PIXEL STATION — <a href="https://github.com" target="_blank">GitHub</a></p>
+    </div>
+  </div>
+
+  <script>
+    const starsEl = document.getElementById('stars');
+    for (let i = 0; i < 80; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.style.left = Math.random() * 100 + '%';
+      s.style.animationDuration = (3 + Math.random() * 5) + 's';
+      s.style.animationDelay = Math.random() * 5 + 's';
+      s.style.opacity = 0.2 + Math.random() * 0.6;
+      starsEl.appendChild(s);
+    }
+
+    const filters = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.card');
+    filters.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filters.forEach(f => f.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        cards.forEach(card => {
+          const tags = card.dataset.tags;
+          if (filter === 'all' || tags.includes(filter)) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

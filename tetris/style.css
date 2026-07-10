@@ -1,0 +1,21 @@
+*{ margin:0; padding:0; box-sizing:border-box; font-family:'Courier New',monospace; }
+body{ background:#0a0a15; display:flex; justify-content:center; align-items:center; min-height:100vh; }
+.game-container{ display:flex; gap:30px; }
+canvas{ image-rendering:pixelated; }
+#game{ border:3px solid #aa44ff; background:#050515; }
+#next{ border:2px solid #666; background:#0a0a15; }
+.hud{ color:#ffdd00; font-size:14px; margin-bottom:10px; line-height:1.6; }
+.hud span{ color:#fff; }
+.menu,.over{ position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.menu h1{ color:#aa44ff; font-size:32px; margin-bottom:20px; text-shadow:0 0 10px #aa44ff; }
+.over h2{ color:#ff4444; font-size:26px; margin-bottom:10px; }
+.over p{ color:#fff; font-size:16px; margin-bottom:20px; }
+.over p span{ color:#ffdd00; }
+.btn{ padding:12px 36px; font-size:18px; background:transparent; border:2px solid #aa44ff; color:#aa44ff; cursor:pointer; transition:0.2s; }
+.btn:hover{ background:#aa44ff; color:#000; }
+.menu p{ color:#888; font-size:12px; margin-top:8px; }
+.over{ display:none; }
+.left{ position:relative; }
+.right{ color:#888; font-size:12px; }
+.next-title{ margin-bottom:8px; color:#aa44ff; font-size:14px; }
+.controls{ margin-top:20px; line-height:1.8; }
