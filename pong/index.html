@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>像素Pong - 双人/AI双模式</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="info">
+W / S 控制左侧挡板 | 双人模式 I / K 控制右侧挡板 | 先拿到10分获胜
+<br>
+空格重开游戏 | ESC 返回主菜单
+</div>
+
+<div class="menu-wrap" id="menu">
+    <div class="menu-title">像素PONG</div>
+    <button class="menu-btn" id="btnAi">单人对战 AI</button>
+    <button class="menu-btn" id="btnTwo">双人对战 P1 VS P2</button>
+    <div class="tip-text">
+        P1：W 上 / S 下<br>
+        P2：I 上 / K 下<br>
+        空格重开 | ESC 返回菜单
+    </div>
+</div>
+
+<div class="game-container">
+    <div class="win-text" id="winTip"></div>
+    <canvas id="game" width="640" height="400"></canvas>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

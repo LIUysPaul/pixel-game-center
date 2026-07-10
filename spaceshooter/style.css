@@ -1,0 +1,36 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #050008;
+  font-family: 'Press Start 2P', monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#game-container {
+  position: relative;
+  width: 540px;
+  height: 720px;
+  image-rendering: pixelated;
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.15), 0 0 80px rgba(255, 0, 170, 0.08);
+  border: 3px solid #1a1030;
+}
+
+#gameCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #0a0015;
+  image-rendering: pixelated;
+}
+
+@media (max-width: 580px) {
+  #game-container {
+    width: 100vw;
+    height: 133.33vw;
+    max-height: 100vh;
+  }
+}

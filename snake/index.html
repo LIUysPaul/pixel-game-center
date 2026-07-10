@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>像素贪吃蛇 - Snake</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="game-container">
+    <div class="hud">
+        <span class="score">分数: 0</span>
+        <span class="high">最高分: 0</span>
+    </div>
+    <canvas id="game" width="400" height="400"></canvas>
+    <div class="menu" id="menu">
+        <h1>贪吃蛇</h1>
+        <button class="btn" id="start">开始游戏</button>
+        <p>WASD / 方向键控制方向</p>
+        <p>空格暂停 | ESC 返回菜单</p>
+    </div>
+    <div class="over" id="over">
+        <h2>游戏结束!</h2>
+        <p>得分: <span id="final">0</span></p>
+        <button class="btn" id="restart">再来一局</button>
+    </div>
+</div>
+<script src="js/main.js"></script>
+</body>
+</html>
