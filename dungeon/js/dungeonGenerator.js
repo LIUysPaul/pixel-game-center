@@ -124,7 +124,8 @@ class DungeonGenerator {
   }
 
   isCorridor(x, y) {
-    // Check if this floor tile is not inside any room
+    // Check if this floor tile is not inside any room and within bounds
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height) return false;
     return !this.rooms.some(r => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h);
   }
 

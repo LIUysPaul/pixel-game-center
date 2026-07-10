@@ -55,7 +55,7 @@ class Enemy {
       let dx = player.x - this.x;
       let dy = player.y - this.y;
       const len = Math.hypot(dx, dy);
-      if (len > 0) { dx /= len; dy /= len; }
+      if (len > 0.001) { dx /= len; dy /= len; }
 
       const newX = this.x + dx * this.speed * dt + this.pushX * dt;
       const newY = this.y + dy * this.speed * dt + this.pushY * dt;

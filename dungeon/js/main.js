@@ -17,6 +17,10 @@ class InputManager {
     return this.keys.has(code);
   }
 
+  justPressed(code) {
+    return this.keys.has(code) && !this.prevKeys.has(code);
+  }
+
   update() {
     this.prevKeys = new Set(this.keys);
   }

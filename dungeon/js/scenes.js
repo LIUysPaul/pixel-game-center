@@ -7,7 +7,7 @@ class MenuScene {
 
   update(dt, input) {
     this.time += dt;
-    if (input.isPressed('Enter') || input.isPressed('Space')) {
+    if (input.justPressed('Enter') || input.justPressed('Space')) {
       this.engine.setScene(new DungeonScene(this.engine));
     }
   }
@@ -122,7 +122,7 @@ class DungeonScene {
 
   update(dt, input) {
     if (this.player.dead) {
-      if (input.isPressed('Enter')) {
+      if (input.justPressed('Enter')) {
         this.engine.setScene(new GameOverScene(this.engine, this.level, this.kills, this.score));
       }
       return;
@@ -436,10 +436,10 @@ class GameOverScene {
 
   update(dt, input) {
     this.time += dt;
-    if (input.isPressed('Enter') || input.isPressed('Space')) {
+    if (input.justPressed('Enter') || input.justPressed('Space')) {
       this.engine.setScene(new DungeonScene(this.engine));
     }
-    if (input.isPressed('Escape')) {
+    if (input.justPressed('Escape')) {
       this.engine.setScene(new MenuScene(this.engine));
     }
   }
