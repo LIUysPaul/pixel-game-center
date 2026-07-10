@@ -1,0 +1,17 @@
+*{ margin:0; padding:0; box-sizing:border-box; font-family:'Courier New',monospace; }
+body{ background:#0a0515; display:flex; justify-content:center; align-items:center; min-height:100vh; }
+.game-container{ position:relative; }
+canvas{ image-rendering:pixelated; border:3px solid #ff8844; background:#050515; }
+.hud{ position:absolute; top:-36px; left:0; right:0; display:flex; justify-content:space-between; padding:0 10px; }
+.hud span{ color:#ff8844; font-size:14px; }
+.hud span span{ color:#fff; }
+.menu,.over,.win{ position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.menu h1{ color:#ff8844; font-size:36px; margin-bottom:20px; text-shadow:0 0 10px #ff8844; }
+.over h2{ color:#ff4444; font-size:28px; margin-bottom:10px; }
+.win h2{ color:#44ff44; font-size:28px; margin-bottom:10px; }
+.over p,.win p{ color:#fff; font-size:16px; margin-bottom:20px; }
+.over p span,.win p span{ color:#ffdd00; }
+.btn{ padding:12px 40px; font-size:18px; background:transparent; border:2px solid #ff8844; color:#ff8844; cursor:pointer; transition:0.2s; }
+.btn:hover{ background:#ff8844; color:#000; }
+.menu p{ color:#888; font-size:12px; margin-top:8px; }
+.over,.win{ display:none; }
