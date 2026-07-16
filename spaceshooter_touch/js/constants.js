@@ -29,7 +29,9 @@ const C = {
   textPink: '#ff00aa',
   star1: '#ffffff',
   star2: '#aaaaff',
-  star3: '#555588'
+  star3: '#555588',
+  laserOrange: '#ff8800',
+  laserYellow: '#ffdd00'
 };
 
 const PLAYER = {
@@ -40,14 +42,20 @@ const PLAYER = {
   maxWeaponLevel: 5,
   startBombs: 3,
   invulnTime: 1.5,
-  hitRadius: 6
+  hitRadius: 6,
+  laserWidth: 8,
+  laserDamage: 10,
+  laserRange: 200
 };
 
 const ENEMY_TYPES = {
   small: { hp: 1, size: 16, speed: 150, score: 100, color: C.enemy1, shootRate: 0, dropChance: 0.05 },
   shooter: { hp: 3, size: 22, speed: 100, score: 250, color: C.enemy2, shootRate: 1.5, dropChance: 0.15 },
   heavy: { hp: 6, size: 30, speed: 60, score: 500, color: C.enemy3, shootRate: 1.0, dropChance: 0.30 },
-  boss: { hp: 100, size: 80, speed: 30, score: 5000, color: C.boss, shootRate: 0.4, dropChance: 1.0 }
+  boss: { hp: 100, size: 80, speed: 30, score: 5000, color: C.boss, shootRate: 0.4, dropChance: 1.0 },
+  back_small: { hp: 2, size: 14, speed: 200, score: 200, color: '#ff8844', shootRate: 0, dropChance: 0.10 },
+  minion_orange: { hp: 2, size: 16, speed: 100, score: 150, color: '#ff8844', shootRate: 2.0, dropChance: 0.05 },
+  minion_purple: { hp: 3, size: 20, speed: 80, score: 200, color: '#cc66ff', shootRate: 1.5, dropChance: 0.08 }
 };
 
 const ITEM_TYPES = {

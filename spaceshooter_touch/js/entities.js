@@ -85,6 +85,37 @@ class Player {
     return true;
   }
 
+  // 引擎激光：从飞机尾部向下发射的橙黄色光束
+  getLaserHitbox() {
+    const beamY = this.y + 10;
+    const beamEnd = Math.min(beamY + PLAYER.laserRange, GAME.HEIGHT);
+    const w = PLAYER.laserWidth;
+    return { x: this.x - w, y: beamY, w: w * 2, h: beamEnd - beamY };
+  }
+
+  renderLaser(ctx) {
+    const beamY = this.y + 10;
+    const beamEnd = Math.min(beamY + PLAYER.laserRange, GAME.HEIGHT);
+    const w = PLAYER.laserWidth;
+    const flicker = 0.7 + Math.sin(this.animTimer * 30) * 0.3;
+
+    // 外层橙色光晕
+    ctx.fillStyle = `rgba(255, 80, 0, ${0.12 * flicker})`;
+    ctx.fillRect(Math.floor(this.x - w * 1.5), beamY, w * 3, beamEnd - beamY);
+
+    // 橙色光束
+    ctx.fillStyle = `rgba(255, 140, 0, ${0.35 * flicker})`;
+    ctx.fillRect(Math.floor(this.x - w), beamY, w * 2, beamEnd - beamY);
+
+    // 黄色核心
+    ctx.fillStyle = `rgba(255, 220, 0, ${0.6 * flicker})`;
+    ctx.fillRect(Math.floor(this.x - w * 0.5), beamY, w, beamEnd - beamY);
+
+    // 白热中心线
+    ctx.fillStyle = `rgba(255, 255, 220, ${0.85 * flicker})`;
+    ctx.fillRect(Math.floor(this.x - 1), beamY, 2, beamEnd - beamY);
+  }
+
   render(ctx) {
     if (this.invuln > 0 && Math.floor(this.invuln * 20) % 2 === 0) return;
 
@@ -213,6 +244,31 @@ class Enemy {
         }
         this.shootTimer = this.shootRate;
       }
+    } else if (this.type === 'back_small') {
+      // 从后方出现，向上移动，左右摆动
+      this.y -= this.speed * dt;
+      this.x = this.startX + Math.sin(this.t * 4) * 40;
+      if (this.y < -50) this.dead = true;
+    } else if (this.type === 'minion_orange') {
+      // Boss召唤的小橙怪，向下移动并追踪射击
+      this.y += this.speed * dt;
+      this.x = this.startX + Math.sin(this.t * 3) * 40;
+      if (this.shootTimer <= 0 && this.y > 0 && this.y < GAME.HEIGHT - 100) {
+        const dx = player.x - this.x, dy = player.y - this.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        bullets.addEnemyBullet(this.x, this.y + 8, (dx / dist) * 180, (dy / dist) * 180);
+        this.shootTimer = this.shootRate;
+      }
+    } else if (this.type === 'minion_purple') {
+      // Boss召唤的小紫怪，慢速下降，散射
+      this.y += this.speed * dt;
+      if (this.shootTimer <= 0 && this.y > 20 && this.y < GAME.HEIGHT - 100) {
+        for (let i = -1; i <= 1; i++) {
+          const angle = Math.PI / 2 + i * 0.3;
+          bullets.addEnemyBullet(this.x, this.y + 10, Math.cos(angle) * 140, Math.sin(angle) * 140);
+        }
+        this.shootTimer = this.shootRate;
+      }
     } else {
       // Small enemy - straight down
       this.y += this.speed * dt;
@@ -243,6 +299,12 @@ class Enemy {
       this.renderShooter(ctx);
     } else if (this.type === 'heavy') {
       this.renderHeavy(ctx);
+    } else if (this.type === 'back_small') {
+      this.renderBackSmall(ctx);
+    } else if (this.type === 'minion_orange') {
+      this.renderMinionOrange(ctx);
+    } else if (this.type === 'minion_purple') {
+      this.renderMinionPurple(ctx);
     } else {
       this.renderSmall(ctx);
     }
@@ -331,6 +393,51 @@ class Enemy {
     ctx.fillStyle = '#ff0066';
     ctx.fillRect(-30, -40, 8, 10);
     ctx.fillRect(22, -40, 8, 10);
+  }
+
+  // 后方小怪：倒三角造型
+  renderBackSmall(ctx) {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(-7, -6, 14, 4);
+    ctx.fillRect(-5, -2, 10, 4);
+    ctx.fillRect(-3, 2, 6, 4);
+    ctx.fillStyle = '#cc6622';
+    ctx.fillRect(-5, -4, 10, 2);
+    ctx.fillStyle = '#ff0';
+    ctx.fillRect(-2, -3, 2, 2);
+    ctx.fillRect(0, -3, 2, 2);
+    // 尾焰（朝下，因为向上飞）
+    ctx.fillStyle = `rgba(255, 100, 0, ${0.5 + Math.sin(this.animTimer * 20) * 0.3})`;
+    ctx.fillRect(-2, 6, 4, 4);
+  }
+
+  // Boss召唤的小橙怪
+  renderMinionOrange(ctx) {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(-8, -6, 16, 12);
+    ctx.fillStyle = '#cc6622';
+    ctx.fillRect(-6, -4, 12, 8);
+    ctx.fillStyle = '#ff0';
+    ctx.fillRect(-3, -2, 2, 2);
+    ctx.fillRect(1, -2, 2, 2);
+    // 小翅膀
+    ctx.fillStyle = this.color;
+    ctx.fillRect(-10, 0, 3, 4);
+    ctx.fillRect(7, 0, 3, 4);
+  }
+
+  // Boss召唤的小紫怪
+  renderMinionPurple(ctx) {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(-10, -8, 20, 16);
+    ctx.fillStyle = '#9944cc';
+    ctx.fillRect(-8, -6, 16, 12);
+    ctx.fillStyle = '#ff0';
+    ctx.fillRect(-4, -3, 3, 3);
+    ctx.fillRect(1, -3, 3, 3);
+    // 中间红点
+    ctx.fillStyle = '#ff4444';
+    ctx.fillRect(-2, 2, 4, 2);
   }
 }
 

@@ -47,6 +47,14 @@ class MenuScene {
     ctx.fillRect(-1, -4, 2, 4);
     ctx.fillStyle = `rgba(255,100,0,${0.5 + Math.sin(this.time * 20) * 0.3})`;
     ctx.fillRect(-3, 8, 6, 4);
+    // 引擎激光预览
+    const lflick = 0.7 + Math.sin(this.time * 30) * 0.3;
+    ctx.fillStyle = `rgba(255, 140, 0, ${0.35 * lflick})`;
+    ctx.fillRect(-8, 12, 16, 80);
+    ctx.fillStyle = `rgba(255, 220, 0, ${0.6 * lflick})`;
+    ctx.fillRect(-4, 12, 8, 80);
+    ctx.fillStyle = `rgba(255, 255, 220, ${0.85 * lflick})`;
+    ctx.fillRect(-1, 12, 2, 80);
     ctx.restore();
 
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -70,6 +78,10 @@ class MenuScene {
     ctx.fillText('WASD/ARROWS: MOVE', GAME.WIDTH / 2, 485);
     ctx.fillStyle = C.itemBomb;
     ctx.fillText('SPACE: BOMB', GAME.WIDTH / 2, 505);
+
+    ctx.fillStyle = C.laserOrange;
+    ctx.font = '8px "Press Start 2P", monospace';
+    ctx.fillText('ENGINE LASER: AUTO', GAME.WIDTH / 2, 525);
 
     if (Math.sin(this.time * 5) > 0) {
       ctx.fillStyle = C.textCyan;
@@ -100,6 +112,8 @@ class PlayScene {
     this.flashTimer = 0;
     this.messageText = '';
     this.messageTimer = 0;
+    this.backSpawnTimer = 5;
+    this.bossSummonTimer = 0;
   }
 
   update(dt, input) {
@@ -162,9 +176,37 @@ class PlayScene {
           this.spawnBoss();
           this.bossSpawned = true;
           this.bossActive = true;
+          this.bossSummonTimer = 5;
           this.showMessage('WARNING! BOSS!', C.textPink, 2);
         } else if (!this.bossSpawned || this.wave % 3 !== 0) {
           this.nextWave();
+        }
+      }
+    }
+
+    // 后方敌人生成（从第2波开始）
+    if (this.wave >= 2 && !this.bossActive) {
+      this.backSpawnTimer -= dt;
+      if (this.backSpawnTimer <= 0) {
+        this.spawnBackEnemy();
+        this.backSpawnTimer = 4 + Math.random() * 3;
+      }
+    }
+
+    // Boss召唤小怪
+    if (this.bossActive) {
+      this.bossSummonTimer -= dt;
+      if (this.bossSummonTimer <= 0) {
+        this.bossSummonTimer = 4 + Math.random() * 3;
+        const boss = this.enemies.find(e => e.type === 'boss' && !e.dead);
+        if (boss) {
+          const count = 1 + Math.floor(Math.random() * 2);
+          for (let i = 0; i < count; i++) {
+            const type = Math.random() < 0.5 ? 'minion_orange' : 'minion_purple';
+            const ox = (Math.random() - 0.5) * 80;
+            this.enemies.push(new Enemy(type, boss.x + ox, boss.y + 30));
+          }
+          this.showMessage('MINIONS!', C.enemy3, 1);
         }
       }
     }
@@ -176,6 +218,7 @@ class PlayScene {
       item.update(dt);
     }
 
+    // 玩家子弹 vs 敌人
     for (const b of this.bullets.playerBullets) {
       for (const e of this.enemies) {
         if (e.dead) continue;
@@ -201,6 +244,38 @@ class PlayScene {
             this.particles.explode(b.x, b.y, e.color, 3, 80);
           }
           break;
+        }
+      }
+    }
+
+    // 引擎激光 vs 敌人（持续伤害）
+    if (!this.player.dead) {
+      const laserHB = this.player.getLaserHitbox();
+      for (const e of this.enemies) {
+        if (e.dead) continue;
+        const hb = e.getHitbox();
+        if (laserHB.x < hb.x + hb.w && laserHB.x + laserHB.w > hb.x &&
+            laserHB.y < hb.y + hb.h && laserHB.y + laserHB.h > hb.y) {
+          e.takeDamage(PLAYER.laserDamage * dt);
+          // 激光命中粒子
+          if (Math.random() < 0.3) {
+            this.particles.explode(e.x, e.y - e.size / 2, C.laserOrange, 2, 60);
+          }
+          if (e.dead) {
+            this.score += e.score;
+            this.particles.explode(e.x, e.y, e.color, e.type === 'boss' ? 30 : 8, 200);
+            if (e.type === 'boss') {
+              this.shakeTimer = 0.5;
+              this.flashTimer = 0.3;
+              this.bossActive = false;
+              this.bossSpawned = false;
+              this.nextWave();
+            }
+            if (Math.random() < e.dropChance) {
+              const types = ['power', 'power', 'bomb', 'life'];
+              this.items.push(new Item(types[Math.floor(Math.random() * types.length)], e.x, e.y));
+            }
+          }
         }
       }
     }
@@ -286,6 +361,11 @@ class PlayScene {
     this.enemies.push(new Enemy(type, x, -30));
   }
 
+  spawnBackEnemy() {
+    const x = 40 + Math.random() * (GAME.WIDTH - 80);
+    this.enemies.push(new Enemy('back_small', x, GAME.HEIGHT + 30));
+  }
+
   spawnBoss() {
     this.enemies.push(new Enemy('boss', GAME.WIDTH / 2, -80));
   }
@@ -296,6 +376,7 @@ class PlayScene {
     this.enemiesThisWave = 0;
     this.maxEnemiesThisWave = 6 + this.wave * 2;
     this.bossSpawned = false;
+    this.backSpawnTimer = 5;
     this.showMessage('WAVE ' + this.wave, C.textCyan, 1.5);
   }
 
@@ -342,6 +423,8 @@ class PlayScene {
     for (const item of this.items) item.render(ctx);
     for (const e of this.enemies) e.render(ctx);
     this.bullets.render(ctx);
+    // 引擎激光（在飞机下方渲染）
+    if (!this.player.dead) this.player.renderLaser(ctx);
     if (!this.player.dead) this.player.render(ctx);
     this.particles.render(ctx);
 
