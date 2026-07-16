@@ -1,0 +1,97 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #050008;
+  font-family: 'Press Start 2P', monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#game-container {
+  position: relative;
+  width: 540px;
+  height: 720px;
+  image-rendering: pixelated;
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.15), 0 0 80px rgba(255, 0, 170, 0.08);
+  border: 3px solid #1a1030;
+}
+
+#gameCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #0a0015;
+  image-rendering: pixelated;
+  touch-action: none;
+}
+
+#touch-ui {
+  display: none;
+}
+
+@media (max-width: 580px) or (hover: none) {
+  #game-container {
+    width: 100vw;
+    height: 133.33vw;
+    max-height: 100vh;
+  }
+
+  #touch-ui {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+  }
+
+  .touch-btn {
+    pointer-events: auto;
+    position: absolute;
+    bottom: 30px;
+    right: 25px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(68, 136, 255, 0.3);
+    border: 3px solid #4488ff;
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .touch-btn:active {
+    background: rgba(68, 136, 255, 0.6);
+    border-color: #fff;
+    transform: scale(0.92);
+  }
+
+  #touch-hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(0, 255, 255, 0.4);
+    font-size: 10px;
+    text-align: center;
+    pointer-events: none;
+    animation: fadeOut 3s ease-out forwards;
+    animation-delay: 2s;
+  }
+
+  @keyframes fadeOut {
+    to { opacity: 0; }
+  }
+}
